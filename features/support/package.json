@@ -1,0 +1,41 @@
+{
+  "name": "app-scenario",
+  "version": "0.0.1",
+  "description": "Scenario test for chaincode",
+  "engines": {
+    "node": ">=16.13.0"
+  },
+  "scripts": {
+    "build": "npm-run-all clean compile lint",
+    "clean": "rimraf dist --no-glob",
+    "cucumber": "NODE_OPTIONS='--enable-source-maps' cucumber-js --format cucumber-console-formatter --require 'dist/**/*.js' ../contracts",
+    "cucumber:no-hsm": "NODE_OPTIONS='--enable-source-maps' cucumber-js --tags 'not @hsm' --format cucumber-console-formatter --require 'dist/**/*.js' ../features",
+    "compile": "tsc",
+    "lint": "eslint . --ext .ts",
+    "test": "npm-run-all build cucumber",
+    "test:no-hsm": "npm-run-all build cucumber:no-hsm"
+  },
+  "private": true,
+  "author": "",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@hyperledger/fabric-gateway": "^1.4.0",
+    "@hyperledger/fabric-protos": "^0.2.1"
+  },
+  "devDependencies": {
+    "@cucumber/cucumber": "^10.0.1",
+    "@tsconfig/node16": "^16.1.1",
+    "@types/google-protobuf": "^3.15.9",
+    "@types/jsrsasign": "^10.5.11",
+    "@types/node": "^20.8.9",
+    "@typescript-eslint/eslint-plugin": "^6.9.1",
+    "@typescript-eslint/parser": "^6.9.1",
+    "cucumber-console-formatter": "^1.0.0",
+    "eslint": "^8.52.0",
+    "expect": "^29.7.0",
+    "glob": "^10.3.10",
+    "jsrsasign": "^10.8.6",
+    "npm-run-all": "^4.1.5",
+    "typescript": "^5.2.2"
+  }
+}
