@@ -29,7 +29,7 @@ interface ConnectionInfo {
 
 const peerConnectionInfo: Record<string, ConnectionInfo> = {
   "peer0.org1.example.com": {
-    url: "localhost:7051",
+    url: "org1peer-api.127-0-0-1.nip.io:8080",
     serverNameOverride: "peer0.org1.example.com",
     tlsRootCertPath:
       fixturesDir +
@@ -38,22 +38,17 @@ const peerConnectionInfo: Record<string, ConnectionInfo> = {
   },
 };
 
-async function newIdentity(user: string, mspId: string): Promise<Identity> {
-  const certificate = await readCertificate(user, mspId);
+async function newIdentity(user: string, _mspId: string): Promise<Identity> {
+  const certificate = await readCertificate(user, _mspId);
   return {
-    mspId,
+    mspId: "org1MSP",
     credentials: certificate,
   };
 }
 
 async function readCertificate(user: string, mspId: string): Promise<Buffer> {
-  const org = getOrgForMsp(mspId);
   const credentialsPath = getCredentialsPath(user, mspId);
-  const certPath = path.join(
-    credentialsPath,
-    "signcerts",
-    `${user}@${org}-cert.pem`,
-  );
+  const certPath = path.join(credentialsPath, "signcerts", "cert.pem");
   return await fs.readFile(certPath);
 }
 
@@ -67,23 +62,14 @@ async function readPrivateKey(
   mspId: string,
 ): Promise<crypto.KeyObject> {
   const credentialsPath = getCredentialsPath(user, mspId);
-  const keyPath = path.join(credentialsPath, "keystore", "key.pem");
+  const keyPath = path.join(credentialsPath, "keystore", "cert_sk");
   const privateKeyPem = await fs.readFile(keyPath);
   return crypto.createPrivateKey(privateKeyPem);
 }
 
 function getCredentialsPath(user: string, mspId: string): string {
   const org = getOrgForMsp(mspId);
-  return path.join(
-    fixturesDir,
-    "crypto-material",
-    "crypto-config",
-    "peerOrganizations",
-    `${org}`,
-    "users",
-    `${user}@${org}`,
-    "msp",
-  );
+  return path.join(fixturesDir, "uf", "_msp", `${org}`, `${org}${user}`, "msp");
 }
 
 export class CustomWorld {
@@ -134,15 +120,16 @@ export class CustomWorld {
   async connect(address: string): Promise<void> {
     // address is the name of the peer, lookup the connection info
     const peer = peerConnectionInfo[address];
-    const tlsRootCert = await fs.readFile(peer.tlsRootCertPath);
-    const credentials = grpc.credentials.createSsl(tlsRootCert);
-    let grpcOptions: Record<string, unknown> = {};
-    if (peer.serverNameOverride) {
-      grpcOptions = {
-        "grpc.ssl_target_name_override": peer.serverNameOverride,
-      };
-    }
-    const client = new grpc.Client(peer.url, credentials, grpcOptions);
+    //const tlsRootCert = await fs.readFile(peer.tlsRootCertPath);
+    //const credentials = grpc.credentials.createSsl(tlsRootCert);
+    //let grpcOptions: Record<string, unknown> = {};
+    // if (peer.serverNameOverride) {
+    //   grpcOptions = {
+    //     "grpc.ssl_target_name_override": peer.serverNameOverride,
+    //   };
+    // }
+    // FIXME: use the credentials and grpcOptions
+    const client = new grpc.Client(peer.url, grpc.credentials.createInsecure());
     this.getCurrentGateway().connect(client);
   }
 

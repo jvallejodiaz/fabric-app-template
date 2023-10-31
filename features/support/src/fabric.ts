@@ -8,7 +8,8 @@ import { execFileSync, spawnSync } from "child_process";
 import * as path from "path";
 import * as fs from "fs";
 
-export const fixturesDir = path.resolve(__dirname, "..", "..", "fixtures");
+// FIXME: get folder dynamically
+export const fixturesDir = path.resolve("/Users/jvallejo/Projects/fabric_app_template_project/fabric-app-template/",  "_cfg");
 
 const dockerComposeDir = path.join(fixturesDir, "docker-compose");
 const dockerComposeFile = "docker-compose-tls.yaml";
@@ -32,20 +33,10 @@ interface OrdererInfo {
 }
 
 const orgs: Record<string, OrgInfo> = {
-  Org1MSP: {
-    orgName: "org1.example.com",
+  org1: {
+    orgName: "org1",
     cli: "org1_cli",
-    peers: ["peer0.org1.example.com:7051", "peer1.org1.example.com:9051"],
-  },
-  Org2MSP: {
-    orgName: "org2.example.com",
-    cli: "org2_cli",
-    peers: ["peer0.org2.example.com:8051", "peer1.org2.example.com:10051"],
-  },
-  Org3MSP: {
-    orgName: "org2.example.com",
-    cli: "org3_cli",
-    peers: ["peer0.org3.example.com:11051"],
+    peers: ["org1peer-api.127-0-0-1.nip.io:8080"],
   },
 };
 
