@@ -116,7 +116,7 @@ debugcc:
 
     export CFG=$CWDIR/_cfg/uf
 
-    pushd $CWDIR/contracts/asset-transfer-typescript
+    pushd $CWDIR/contracts/basic
 
     # this is the ip address the peer will use to talk to the CHAINCODE_ID
     # remember this is relative from where the peer is running.

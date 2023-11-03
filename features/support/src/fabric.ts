@@ -8,8 +8,7 @@ import { execFileSync, spawnSync } from "child_process";
 import * as path from "path";
 import * as fs from "fs";
 
-// FIXME: get folder dynamically
-export const fixturesDir = path.resolve("/Users/jvallejo/Projects/fabric_app_template_project/fabric-app-template/",  "_cfg");
+export const fixturesDir = path.resolve(__dirname, "..", "..", "fixtures");
 
 const dockerComposeDir = path.join(fixturesDir, "docker-compose");
 const dockerComposeFile = "docker-compose-tls.yaml";
@@ -18,7 +17,7 @@ const tlsOptions = [
   "--tls",
   "true",
   "--cafile",
-  "/etc/hyperledger/configtx/crypto-config/ordererOrganizations/example.com/tlsca/tlsca.example.com-cert.pem",
+  "/etc/hyperledger/configtx/crypto-config/ordererOrganizations/example.com/tlsca/tlsca.example.com-cert.pem"
 ];
 
 interface OrgInfo {
@@ -33,17 +32,27 @@ interface OrdererInfo {
 }
 
 const orgs: Record<string, OrgInfo> = {
-  org1: {
-    orgName: "org1",
+  Org1MSP: {
+    orgName: "org1.example.com",
     cli: "org1_cli",
-    peers: ["org1peer-api.127-0-0-1.nip.io:8080"],
+    peers: ["peer0.org1.example.com:7051", "peer1.org1.example.com:9051"]
   },
+  Org2MSP: {
+    orgName: "org2.example.com",
+    cli: "org2_cli",
+    peers: ["peer0.org2.example.com:8051", "peer1.org2.example.com:10051"]
+  },
+  Org3MSP: {
+    orgName: "org2.example.com",
+    cli: "org3_cli",
+    peers: ["peer0.org3.example.com:11051"]
+  }
 };
 
 const orderers: Array<OrdererInfo> = [
   { address: "orderer1.example.com", port: "7053" },
   { address: "orderer2.example.com", port: "8053" },
-  { address: "orderer3.example.com", port: "9053" },
+  { address: "orderer3.example.com", port: "9053" }
 ];
 
 export function getOrgForMsp(mspId: string): string {
@@ -61,7 +70,7 @@ export function findSoftHSMPKCS11Lib(): string {
     "/usr/lib/x86_64-linux-gnu/softhsm/libsofthsm2.so",
     "/usr/local/lib/softhsm/libsofthsm2.so",
     "/usr/lib/libacsp-pkcs11.so",
-    "/opt/homebrew/lib/softhsm/libsofthsm2.so",
+    "/opt/homebrew/lib/softhsm/libsofthsm2.so"
   ];
 
   for (const pathnameToTry of commonSoftHSMPathNames) {
@@ -74,6 +83,7 @@ export function findSoftHSMPKCS11Lib(): string {
 }
 
 function dockerCommand(...args: string[]): string {
+  console.log("docker", args.join(" "));
   const result = spawnSync("docker", args);
   const output = result.output.toString();
   console.log(output);
@@ -108,7 +118,7 @@ export class Fabric {
       Object.values(orgs)
         .flatMap((org) => org.peers)
         .map((hostPort) => hostPort.split(":")[0])
-        .map((host) => [host, true]),
+        .map((host) => [host, true])
     );
   }
 
@@ -116,7 +126,7 @@ export class Fabric {
     const out = spawnSync(
       "docker-compose",
       ["-f", dockerComposeFile, "-p", "node", "down"],
-      { cwd: dockerComposeDir },
+      { cwd: dockerComposeDir }
     );
     console.log(out.output.toString());
   }
@@ -132,7 +142,7 @@ export class Fabric {
     const dockerComposeOut = spawnSync(
       "docker-compose",
       ["-f", dockerComposeFile, "-p", "node", "up", "-d"],
-      { cwd: dockerComposeDir },
+      { cwd: dockerComposeDir }
     );
     console.log(dockerComposeOut.output.toString());
 
@@ -142,7 +152,7 @@ export class Fabric {
 
   generateHSMUser(hsmuserid: string): void {
     const generateOut = execFileSync("./generate-hsm-user.sh", [hsmuserid], {
-      cwd: fixturesDir,
+      cwd: fixturesDir
     });
     console.log(generateOut.toString());
   }
@@ -175,7 +185,7 @@ export class Fabric {
         "--client-cert",
         orddir + "/tls/server.crt",
         "--client-key",
-        orddir + "/tls/server.key",
+        orddir + "/tls/server.key"
       );
     }
 
@@ -191,7 +201,7 @@ export class Fabric {
           "channel",
           "join",
           "-b",
-          "/etc/hyperledger/configtx/mychannel.block",
+          "/etc/hyperledger/configtx/mychannel.block"
         );
       }
     }
@@ -205,7 +215,7 @@ export class Fabric {
     ccName: string,
     version: string,
     channelName: string,
-    signaturePolicy: string,
+    signaturePolicy: string
   ): Promise<void> {
     let exists = false;
     let sequence = "1";
@@ -230,7 +240,7 @@ export class Fabric {
         "--channelID",
         channelName,
         "--name",
-        ccName,
+        ccName
       );
       const pattern = new RegExp(".*Sequence: ([0-9]+),.*");
       const match = out.match(pattern);
@@ -240,17 +250,17 @@ export class Fabric {
       sequence = (Number.parseInt(match[1]) + 1).toString();
     }
 
-    const ccPath = `/opt/gopath/src/github.com/chaincode/${ccType}/${ccName}`;
+    const ccPath = `/opt/gopath/src/github.com/chaincode/${ccName}`;
     const ccLabel = `${ccName}v${version}`;
     const ccPackage = `${ccName}.tar.gz`;
 
     // is there a collections_config.json file?
     let collectionsConfig: string[] = [];
-    const collectionsFile = `chaincode/${ccType}/${ccName}/collections_config.json`;
+    const collectionsFile = `chaincode/${ccName}/collections_config.json`;
     if (fs.existsSync(path.join(fixturesDir, collectionsFile))) {
       collectionsConfig = [
         "--collections-config",
-        path.join("/opt/gopath/src/github.com", collectionsFile),
+        path.join("/opt/gopath/src/github.com", collectionsFile)
       ];
     }
 
@@ -259,7 +269,7 @@ export class Fabric {
         package: ccPackage,
         type: ccType,
         label: ccLabel,
-        path: ccPath,
+        path: ccPath
       });
     }
 
@@ -270,11 +280,11 @@ export class Fabric {
         "peer",
         "lifecycle",
         "chaincode",
-        "queryinstalled",
+        "queryinstalled"
       );
 
       const pattern = new RegExp(
-        ".*Package ID: (.*), Label: " + ccLabel + ".*",
+        ".*Package ID: (.*), Label: " + ccLabel + ".*"
       );
       const match = out.match(pattern);
       if (match === null || match.length < 2) {
@@ -302,7 +312,7 @@ export class Fabric {
         "--sequence",
         sequence,
         "--waitForEvent",
-        ...collectionsConfig,
+        ...collectionsConfig
       );
     }
 
@@ -333,7 +343,7 @@ export class Fabric {
       "/etc/hyperledger/configtx/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt",
       "--tlsRootCertFiles",
       "/etc/hyperledger/configtx/crypto-config/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt",
-      ...collectionsConfig,
+      ...collectionsConfig
     );
 
     this.runningChaincodes[mangledName] = signaturePolicy;
@@ -341,17 +351,17 @@ export class Fabric {
   }
 
   private async installChaincode(
-    chaincode: ChaincodeDefinition,
+    chaincode: ChaincodeDefinition
   ): Promise<void> {
     const orgInstalls = Object.values(orgs).map((orgInfo) =>
-      this.installChaincodeToOrg(chaincode, orgInfo),
+      this.installChaincodeToOrg(chaincode, orgInfo)
     );
     await Promise.all(orgInstalls);
   }
 
   private async installChaincodeToOrg(
     chaincode: ChaincodeDefinition,
-    orgInfo: OrgInfo,
+    orgInfo: OrgInfo
   ): Promise<void> {
     dockerCommand(
       "exec",
@@ -366,7 +376,7 @@ export class Fabric {
       "--label",
       chaincode.label,
       "--path",
-      chaincode.path,
+      chaincode.path
     );
 
     const peerInstalls = orgInfo.peers.map((peer) => {
@@ -380,7 +390,7 @@ export class Fabric {
         "lifecycle",
         "chaincode",
         "install",
-        chaincode.package,
+        chaincode.package
       );
     });
 
@@ -400,7 +410,7 @@ export class Fabric {
 
   private async startAllPeers(): Promise<void> {
     const stoppedPeers = Object.keys(this.runningPeers).filter(
-      (peer) => !this.runningPeers[peer],
+      (peer) => !this.runningPeers[peer]
     );
     if (stoppedPeers.length === 0) {
       return;
