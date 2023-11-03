@@ -83,7 +83,6 @@ export function findSoftHSMPKCS11Lib(): string {
 }
 
 function dockerCommand(...args: string[]): string {
-  console.log("docker", args.join(" "));
   const result = spawnSync("docker", args);
   const output = result.output.toString();
   console.log(output);
