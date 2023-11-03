@@ -19,7 +19,7 @@ export class BasicContract extends Contract {
         return arg2;
     }
 
-    /**
+   /**
    * Get Name Value.
    */
     @Transaction(false)
