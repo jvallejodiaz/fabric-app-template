@@ -8,8 +8,14 @@ Feature: Transaction invocation
         And I use the mychannel network
         And I use the basic contract
 
-    Scenario: Add new value
-        When I prepare to evaluate an PutName transaction
-        And I set the transaction arguments to ["dance", "conga"]
+    Scenario: Update Ledger
+        When I prepare to submit a PutName transaction 
+        And I set the transaction arguments to [ "dance", "conga"]
+        And I invoke the transaction
+        Then the response should be "conga"
+    
+    Scenario: Query Ledger
+        When I prepare to evaluate an GetName transaction
+        And I set the transaction arguments to ["dance"]
         And I invoke the transaction
         Then the response should be "conga"
