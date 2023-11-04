@@ -18,10 +18,16 @@ PEER_IMAGE_PULL ?= hyperledger-fabric.jfrog.io/fabric-peer:amd64-2.5-stable
 # In fabric-gateway main branch this version tag should correspond to the version in the forthcoming Fabric development
 # branch.
 export PEER_IMAGE_TAG ?= 2.5
-
+export ORDERER_IMAGE_TAG ?= 2.5
+export TOOLS_IMAGE_TAG ?= 2.5
+export PEER_IMAGE_TAG ?= 2.5
+export FABRIC_CA_IMAGE_TAG ?= 1.5
+export DOCKER_DEBUG ?= info:dockercontroller,gateway=debug
+export DOCKER_SOCK ?= /var/run/docker.sock
 # TWO_DIGIT_VERSION specifies which chaincode images to pull, they will be tagged to be consistent with PEER_IMAGE_TAG
 # In fabric-gateway main branch it should typically be the latest released chaincode version available in dockerhub.
 TWO_DIGIT_VERSION ?= 2.5
+
 
 TMPDIR ?= /tmp
 
