@@ -3,9 +3,6 @@ on:
   push:
     branches:
       - main
-    paths:
-     - contracts/
-     - features/
 jobs:
   node_unit:
     runs-on: ubuntu-22.04
