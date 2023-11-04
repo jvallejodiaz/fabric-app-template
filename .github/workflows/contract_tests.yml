@@ -1,0 +1,42 @@
+name: Test
+on: 
+  push:
+    branches:
+      - main
+    paths:
+     - contracts/
+     - features/
+jobs:
+  node_unit:
+    runs-on: ubuntu-22.04
+    name: Unit test Node
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version:
+          - 18
+          - 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Run unit tests
+        run: make unit-test-node
+  node_scenario:
+    runs-on: ubuntu-22.04
+    name: Scenario test Node
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version:
+          - 18
+          - 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Run scenario tests
+        run: make scenario-test-node
+

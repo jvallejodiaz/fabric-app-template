@@ -54,9 +54,10 @@
       ".tsx"
     ],
     "exclude": [
-      "coverage/**",
-      "dist/**",
-      "test/**"
+      "coverage/**/*",
+      "dist/**/*",
+      "test/**/*",
+      ".eslintrc.js"
     ],
     "reporter": [
       "text-summary",
