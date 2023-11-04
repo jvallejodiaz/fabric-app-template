@@ -3,6 +3,9 @@ on:
   push:
     branches:
       - main
+env:
+  DEFAULT_GO_VERSION: '1.21'
+
 jobs:
   node_unit:
     runs-on: ubuntu-22.04
@@ -12,7 +15,6 @@ jobs:
       matrix:
         node-version:
           - 18
-          - 20
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -28,12 +30,13 @@ jobs:
       matrix:
         node-version:
           - 18
-          - 20
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
+      - name: Pull Fabric Docker images
+        run: make pull-latest-peer
       - name: Run scenario tests
         run: make scenario-test-node
 
