@@ -1,5 +1,5 @@
 {
-  "name": "asset-transfer",
+  "name": "basic",
   "version": "1.0.0",
   "description": "Basic contract implemented in TypeScript",
   "main": "dist/index.js",
@@ -17,8 +17,8 @@
     "build:watch": "tsc -w",
     "prepublishOnly": "npm run build",
     "metadata": "set -x && fabric-chaincode-node metadata generate --file metadata.json",
-    "package:caas": "npm run build && weft chaincode package caas --path . --label asset-transfer --address ${CHAINCODE_SERVER_ADDRESS} --archive asset-transfer-caas.tgz --quiet",
-    "package:k8s": "npm run build && weft chaincode package caas --path . --label asset-transfer --address ${CHAINCODE_SERVER_ADDRESS} --archive asset-transfer-caas.tgz --quiet",
+    "package:caas": "npm run build && weft chaincode package caas --path . --label basic --address ${CHAINCODE_SERVER_ADDRESS} --archive basic-caas.tgz --quiet",
+    "package:k8s": "npm run build && weft chaincode package caas --path . --label basic --address ${CHAINCODE_SERVER_ADDRESS} --archive basic-caas.tgz --quiet",
     "start:server-nontls": "set -x && fabric-chaincode-node server --chaincode-address=$CHAINCODE_SERVER_ADDRESS --chaincode-id=$CHAINCODE_ID",
     "start:server-debug": "set -x && NODE_OPTIONS='--inspect=0.0.0.0:9229' fabric-chaincode-node server --chaincode-address=$CHAINCODE_SERVER_ADDRESS --chaincode-id=$CHAINCODE_ID",
     "start:server": "set -x && fabric-chaincode-node server --chaincode-address=$CHAINCODE_SERVER_ADDRESS --chaincode-id=$CHAINCODE_ID --chaincode-tls-key-file=/hyperledger/privatekey.pem --chaincode-tls-client-cacert-file=/hyperledger/rootcert.pem --chaincode-tls-cert-file=/hyperledger/cert.pem"
