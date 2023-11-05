@@ -7,7 +7,7 @@
   },
   "scripts": {
     "build": "npm-run-all clean format compile lint",
-    "format": "prettier --ignore-path=.gitignore --write \"**/*.{ts,json,md}\"",
+    "format": "prettier --ignore-path=.gitignore --check \"**/*.{ts,json,md}\"",
     "clean": "rimraf dist --no-glob",
     "cucumber": "NODE_OPTIONS='--enable-source-maps' cucumber-js --format cucumber-console-formatter --require 'dist/**/*.js' ../contracts",
     "cucumber:no-hsm": "NODE_OPTIONS='--enable-source-maps' cucumber-js --tags 'not @hsm' --format cucumber-console-formatter --require 'dist/**/*.js' ../features",
