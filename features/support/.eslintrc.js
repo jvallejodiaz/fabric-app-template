@@ -10,5 +10,7 @@ module.exports = {
     "ecmaVersion": "latest"
   },
   "plugins": ["@typescript-eslint"],
-  "rules": {}
+  "rules": {
+    "complexity": ["error", 10]
+  }
 };
