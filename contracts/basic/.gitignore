@@ -17,3 +17,6 @@ dist
 
 # Files created during workshop run
 metadata.json
+
+# nyc test coverage
+.nyc_output

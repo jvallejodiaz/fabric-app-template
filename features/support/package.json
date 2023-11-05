@@ -6,12 +6,13 @@
     "node": ">=16.13.0"
   },
   "scripts": {
-    "build": "npm-run-all clean compile lint",
+    "build": "npm-run-all clean format compile lint",
+    "format": "prettier --ignore-path=.gitignore --write \"**/*.{ts,json,md}\"",
     "clean": "rimraf dist --no-glob",
     "cucumber": "NODE_OPTIONS='--enable-source-maps' cucumber-js --format cucumber-console-formatter --require 'dist/**/*.js' ../contracts",
     "cucumber:no-hsm": "NODE_OPTIONS='--enable-source-maps' cucumber-js --tags 'not @hsm' --format cucumber-console-formatter --require 'dist/**/*.js' ../features",
     "compile": "tsc",
-    "lint": "eslint . --ext .ts",
+    "lint": "eslint ./src --ext .ts",
     "test": "npm-run-all build cucumber",
     "test:no-hsm": "npm-run-all build cucumber:no-hsm"
   },
@@ -32,10 +33,12 @@
     "@typescript-eslint/parser": "^6.9.1",
     "cucumber-console-formatter": "^1.0.0",
     "eslint": "^8.52.0",
+    "eslint-config-prettier": "^9.0.0",
     "expect": "^29.7.0",
     "glob": "^10.3.10",
     "jsrsasign": "^10.8.6",
     "npm-run-all": "^4.1.5",
+    "prettier": "^3.0.3",
     "typescript": "^5.2.2"
   }
 }

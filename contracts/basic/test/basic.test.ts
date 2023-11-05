@@ -44,7 +44,12 @@ describe("Test Basic smart contract ", () => {
   describe("Call method in basic contract", () => {
     it("Call PutName method", async () => {
       const response = await contract.PutName(ctx, "Something", "value");
-      assert.calledWith(chaincodeStub.putState, "Something", Buffer.from("value"));
+      assert.calledWith(
+        chaincodeStub.putState,
+        "Something",
+        Buffer.from("value"),
+      );
+
       expect(response).to.equals("value");
     });
 
