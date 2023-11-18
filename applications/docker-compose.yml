@@ -1,0 +1,7 @@
+services:
+  basic:
+    build: ./basic_app
+    ports:
+      - "8080:3000"
+    volumes:
+      - ../../_cfg:/usr/_cfg
