@@ -18,6 +18,7 @@ export class AppController {
     @Param('name') name: string,
     @Body() value: Value,
   ): Promise<string> {
+    console.log(value);
     return await this.appService.putName(name, value.value);
   }
 }

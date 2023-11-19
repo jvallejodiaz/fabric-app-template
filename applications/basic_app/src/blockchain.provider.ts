@@ -8,7 +8,7 @@ import {
 import * as crypto from 'crypto';
 import { promises as fs } from 'fs';
 import { Injectable } from '@nestjs/common';
-
+const peerTLS = boolEnvOrDefault('PEER_TLS', true); 
 const channelName = envOrDefault('CHANNEL_NAME', 'mychannel');
 const chaincodeName = envOrDefault('CHAINCODE_NAME', 'asset-transfer');
 const mspId = envOrDefault('MSP_ID', 'org1MSP');
@@ -17,7 +17,7 @@ const credentialsPath = envOrDefault(
   '../../_cfg/uf/_msp/org1/org1admin/msp/admincerts/cert.pem',
 );
 const privateKeyPath = envOrDefault(
-  'CREDENTIALS_PATH',
+  'PRIVATE_KEY_PATH',
   '../../_cfg/uf/_msp/org1/org1admin/msp/keystore/cert_sk',
 );
 const peerHost = envOrDefault('PEER_HOST', 'org1peer-api.127-0-0-1.nip.io');
@@ -39,10 +39,16 @@ async function initFabric(): Promise<void> {
   const privateKeyPem = await fs.readFile(privateKeyPath);
   const privateKey = crypto.createPrivateKey(privateKeyPem);
   const signer = signers.newPrivateKeySigner(privateKey);
+  let clientTLS: grpc.ChannelCredentials = grpc.credentials.createInsecure();
+  
+  if (peerTLS) {
+    const tlsRootCert = await fs.readFile(process.env["TLS_PEER_CERT"]);
+    clientTLS = grpc.credentials.createSsl(tlsRootCert);
+  }
 
   const client = new grpc.Client(
     `${peerHost}:${peerPort}`,
-    grpc.credentials.createInsecure(),
+    clientTLS
   );
 
   const gateway = connect({
@@ -81,4 +87,10 @@ async function initFabric(): Promise<void> {
  */
 function envOrDefault(key: string, defaultValue: string): string {
   return process.env[key] || defaultValue;
+}
+function boolEnvOrDefault(key: string, defaultValue: boolean): boolean {
+  if (process.env[key].toLocaleLowerCase() === 'false') {
+    return false;
+  }
+  return Boolean(process.env[key]) || defaultValue;
 }

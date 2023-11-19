@@ -9,11 +9,13 @@
     "build": "npm-run-all clean format compile lint",
     "format": "prettier --ignore-path=.gitignore --check \"**/*.{ts,json,md}\"",
     "clean": "rimraf dist --no-glob",
-    "cucumber": "NODE_OPTIONS='--enable-source-maps' cucumber-js --format cucumber-console-formatter --require 'dist/**/*.js' ../contracts",
+    "cucumber:contracts": "NODE_OPTIONS='--enable-source-maps' cucumber-js --format cucumber-console-formatter --require 'dist/**/*.js' ../contracts",
+    "cucumber:apps": "NODE_OPTIONS='--enable-source-maps' cucumber-js --format cucumber-console-formatter --require 'dist/**/*.js' ../applications",
     "cucumber:no-hsm": "NODE_OPTIONS='--enable-source-maps' cucumber-js --tags 'not @hsm' --format cucumber-console-formatter --require 'dist/**/*.js' ../features",
     "compile": "tsc",
     "lint": "eslint ./src --ext .ts",
-    "test": "npm-run-all build cucumber",
+    "test:contracts": "npm-run-all build cucumber:contracts",
+    "test:apps": "npm-run-all build cucumber:apps",
     "test:no-hsm": "npm-run-all build cucumber:no-hsm"
   },
   "private": true,
@@ -21,7 +23,8 @@
   "license": "Apache-2.0",
   "dependencies": {
     "@hyperledger/fabric-gateway": "^1.4.0",
-    "@hyperledger/fabric-protos": "^0.2.1"
+    "@hyperledger/fabric-protos": "^0.2.1",
+    "axios": "^1.6.2"
   },
   "devDependencies": {
     "@cucumber/cucumber": "^10.0.1",

@@ -12,6 +12,7 @@ export const fixturesDir = path.resolve(__dirname, "..", "..", "fixtures");
 
 const dockerComposeDir = path.join(fixturesDir, "docker-compose");
 const dockerComposeFile = "docker-compose-tls.yaml";
+const dockerComposeAppFile = "docker-compose-app.yaml";
 
 const tlsOptions = [
   "--tls",
@@ -129,8 +130,7 @@ export class Fabric {
     );
     console.log(out.output.toString());
   }
-
-  async deployNetwork(): Promise<void> {
+  async executeFabricDockerCompose(composeFile: string) {
     if (this.fabricRunning) {
       return;
     }
@@ -140,7 +140,7 @@ export class Fabric {
 
     const dockerComposeOut = spawnSync(
       "docker-compose",
-      ["-f", dockerComposeFile, "-p", "node", "up", "-d"],
+      ["-f", composeFile, "-p", "node", "up", "-d"],
       { cwd: dockerComposeDir },
     );
     console.log(dockerComposeOut.output.toString());
@@ -148,7 +148,12 @@ export class Fabric {
     this.fabricRunning = true;
     await sleep(20000);
   }
-
+  async deployNetwork(): Promise<void> {
+    this.executeFabricDockerCompose(dockerComposeFile);
+  }
+  async deployAppNetwork(): Promise<void> {
+    this.executeFabricDockerCompose(dockerComposeAppFile);
+  }
   generateHSMUser(hsmuserid: string): void {
     const generateOut = execFileSync("./generate-hsm-user.sh", [hsmuserid], {
       cwd: fixturesDir,

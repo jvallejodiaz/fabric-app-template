@@ -49,15 +49,22 @@ unit-test-node: build-node
 	cd "$(node_dir)" && \
 		npm test
 
-.PHONEY: scenario-test-node
-scenario-test-node: build-node
+.PHONEY: scenario-test-contracts
+scenario-test-contracts: build-node
 	cd "$(scenario_dir)/support" && \
 		rm -rf package-lock.json node_modules && \
 		npm install && \
-		npm test
+		npm run test:contracts
+
+.PHONEY: scenario-test-apps
+scenario-test-apps: build-node
+	cd "$(scenario_dir)/support" && \
+		rm -rf package-lock.json node_modules && \
+		npm install && \
+		npm run test:apps
 
 .PHONEY: scenario-test
-scenario-test: scenario-test-node 
+scenario-test: scenario-test-contracts 
 
 .PHONEY: pull-latest-peer
 pull-latest-peer:

@@ -3,5 +3,13 @@ services:
     build: ./basic_app
     ports:
       - "8080:3000"
+    environment:
+      - CHANNEL_NAME=mychannel
+      - CHAINCODE_NAME=basic
+      - MSP_ID=org1MSP
+      - PEER_HOST=org1peer-api.127-0-0-1.nip.io
+      - PEER_PORT=8080
+      - PRIVATE_KEY_PATH=../../_cfg/uf/_msp/org1/org1admin/msp/keystore/cert_sk
+      - CREDENTIALS_PATH=../../_cfg/uf/_msp/org1/org1admin/msp/admincerts/cert.pem
     volumes:
-      - ../../_cfg:/usr/_cfg
+      - ../_cfg:/usr/_cfg

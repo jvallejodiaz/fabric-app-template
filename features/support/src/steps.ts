@@ -68,6 +68,14 @@ Given(
 );
 
 Given(
+  "I have deployed an Application on a Fabric network",
+  { timeout: TIMEOUTS.LONG_STEP },
+  async function (this: CustomWorld): Promise<void> {
+    await fabric.deployAppNetwork();
+  },
+);
+
+Given(
   "I have created and joined all channels",
   { timeout: TIMEOUTS.LONG_STEP },
   async function (this: CustomWorld): Promise<void> {
@@ -228,6 +236,24 @@ When(
   "I invoke the transaction",
   async function (this: CustomWorld): Promise<void> {
     await this.invokeSuccessfulTransaction();
+  },
+);
+
+When(
+  "I prepare a call to {}",
+  async function (this: CustomWorld, host: string): Promise<void> {
+    this.useHttpClient(host);
+  },
+);
+
+When(
+  "I request Put to {string} with value {string}",
+  async function (
+    this: CustomWorld,
+    path: string,
+    value: string,
+  ): Promise<void> {
+    await this.sendPutRequest(path, value);
   },
 );
 
@@ -566,5 +592,13 @@ Then(
   async function (this: CustomWorld, listenerName: string): Promise<void> {
     const event = await this.nextBlockAndPrivateDataEvent(listenerName);
     expect(event).toBeDefined();
+  },
+);
+
+Then(
+  "the API response should be {string}",
+  function (this: CustomWorld, docString: string): void {
+    const resultText = this.getApiResult();
+    expect(resultText).toEqual(docString);
   },
 );

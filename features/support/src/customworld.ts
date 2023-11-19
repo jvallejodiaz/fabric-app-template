@@ -23,6 +23,7 @@ import { getSKIFromCertificate } from "./fabricski";
 import { GatewayContext } from "./gatewaycontext";
 import { TransactionInvocation } from "./transactioninvocation";
 import { assertDefined, Constructor, isInstanceOf } from "./utils";
+import axios, { AxiosInstance, AxiosResponse } from "axios";
 
 let hsmSignerFactory: HSMSignerFactory;
 
@@ -160,10 +161,15 @@ async function readHSMCertificate(user: string): Promise<Buffer> {
 }
 
 export class CustomWorld {
+  getApiResult() {
+    return this.#apiResponse?.data;
+  }
   #gateways: Record<string, GatewayContext> = {};
   #currentGateway?: GatewayContext;
   #transaction?: TransactionInvocation;
   #lastCommittedBlockNumber = BigInt(0);
+  #httpClient?: AxiosInstance;
+  #apiResponse?: AxiosResponse;
 
   async createGateway(
     name: string,
@@ -214,6 +220,20 @@ export class CustomWorld {
 
   useContract(contractName: string): void {
     this.getCurrentGateway().useContract(contractName);
+  }
+  useHttpClient(host: string): void {
+    this.#httpClient = axios.create({
+      baseURL: `http://${host}`,
+      timeout: 1000,
+    });
+  }
+
+  async sendPutRequest(path: string, value: string) {
+    if (this.#httpClient) {
+      this.#apiResponse = await this.#httpClient.put(path, { value: value });
+    } else {
+      throw new Error("HttpClient not initialized");
+    }
   }
 
   async connect(address: string): Promise<void> {
