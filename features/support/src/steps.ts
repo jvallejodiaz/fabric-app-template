@@ -258,6 +258,13 @@ When(
 );
 
 When(
+  "I request Get to {string}",
+  async function (this: CustomWorld, path: string): Promise<void> {
+    await this.sendGetRequest(path);
+  },
+);
+
+When(
   "I listen for chaincode events from {word}",
   async function (this: CustomWorld, chaincodeName: string): Promise<void> {
     await this.listenForChaincodeEvents(DEFAULT_LISTENER_NAME, chaincodeName);

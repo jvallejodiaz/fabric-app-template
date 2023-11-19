@@ -7,7 +7,8 @@
 base_dir := $(patsubst %/,%,$(dir $(realpath $(lastword $(MAKEFILE_LIST)))))
 
 
-node_dir := $(base_dir)/contracts/basic
+contracts_dir := $(base_dir)/contracts/basic
+applications_dir := $(base_dir)/applications/basic_app
 scenario_dir := $(base_dir)/features
 
 # PEER_IMAGE_PULL is where to pull peer image from, it can be set by external env variable
@@ -36,35 +37,46 @@ default:
 	@echo 'No default target.'
 
 .PHONEY: build
-build: build-node
+build: build-contracts
 
-.PHONEY: build-node
-build-node:
-	cd "$(node_dir)" && \
+.PHONEY: build-contracts
+build-contracts:
+	cd "$(contracts_dir)" && \
 		npm install && \
 		npm run build
 
-.PHONEY: unit-test-node
-unit-test-node: build-node
-	cd "$(node_dir)" && \
+.PHONEY: build-apps
+build-apps:
+	cd "$(applications_dir)" && \
+		npm install && \
+		npm run build		
+
+.PHONEY: unit-test-contracts
+unit-test-contracts: build-contracts
+	cd "$(contracts_dir)" && \
 		npm test
 
+.PHONEY: unit-test-apps
+unit-test-apps: build-apps
+	cd "$(applications_dir)" && \
+		npm test		
+
 .PHONEY: scenario-test-contracts
-scenario-test-contracts: build-node
+scenario-test-contracts: build-contracts
 	cd "$(scenario_dir)/support" && \
 		rm -rf package-lock.json node_modules && \
 		npm install && \
 		npm run test:contracts
 
 .PHONEY: scenario-test-apps
-scenario-test-apps: build-node
+scenario-test-apps: build-apps
 	cd "$(scenario_dir)/support" && \
 		rm -rf package-lock.json node_modules && \
 		npm install && \
 		npm run test:apps
 
 .PHONEY: scenario-test
-scenario-test: scenario-test-contracts 
+scenario-test: scenario-test-contracts scenario-test-apps
 
 .PHONEY: pull-latest-peer
 pull-latest-peer:
@@ -76,6 +88,11 @@ pull-latest-peer:
 		docker tag hyperledger/fabric-$${IMAGE}:$(TWO_DIGIT_VERSION) hyperledger/fabric-$${IMAGE}:$(PEER_IMAGE_TAG); \
 	done
 
+.PHONEY: build-app-container
+build-app-container:
+	cd "$(applications_dir)/.." && \
+		docker-compose build
+
 .PHONEY: clean-node
 clean-node:
-	rm -rf "$(node_dir)/package-lock.json" "$(node_dir)/node_modules"
+	rm -rf "$(contracts_dir)/package-lock.json" "$(contracts_dir)/node_modules"

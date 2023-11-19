@@ -89,7 +89,7 @@ function envOrDefault(key: string, defaultValue: string): string {
   return process.env[key] || defaultValue;
 }
 function boolEnvOrDefault(key: string, defaultValue: boolean): boolean {
-  if (process.env[key].toLocaleLowerCase() === 'false') {
+  if (process.env[key]?.toLocaleLowerCase() === 'false') {
     return false;
   }
   return Boolean(process.env[key]) || defaultValue;

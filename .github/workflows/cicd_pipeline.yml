@@ -7,9 +7,9 @@ env:
   DEFAULT_GO_VERSION: '1.21'
 
 jobs:
-  node_unit:
+  unit:
     runs-on: ubuntu-22.04
-    name: Unit test Node
+    name: Unit tests
     strategy:
       fail-fast: false
       matrix:
@@ -20,11 +20,13 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-      - name: Run unit tests
-        run: make unit-test-node
-  node_scenario:
+      - name: Run Contracts unit tests
+        run: make unit-test-contracts
+      - name: Run Apps unit tests
+        run: make unit-test-apps        
+  scenario:
     runs-on: ubuntu-22.04
-    name: Scenario test Node
+    name: Scenario tests
     strategy:
       fail-fast: false
       matrix:
@@ -36,7 +38,9 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - name: Pull Fabric Docker images
-        run: make pull-latest-peer
-      - name: Run scenario tests
-        run: make scenario-test-node
+        run: make pull-latest-peer  
+      - name: Run Fabric scenario tests
+        run: make scenario-test-contracts
+      - name: Run App scenario tests
+        run: make scenario-test-apps
 

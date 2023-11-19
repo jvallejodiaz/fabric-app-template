@@ -125,7 +125,7 @@ export class Fabric {
   dockerDown(): void {
     const out = spawnSync(
       "docker-compose",
-      ["-f", dockerComposeFile, "-p", "node", "down"],
+      ["-f", dockerComposeFile, "-p", "node", "down", "--remove-orphans"],
       { cwd: dockerComposeDir },
     );
     console.log(out.output.toString());
@@ -146,7 +146,7 @@ export class Fabric {
     console.log(dockerComposeOut.output.toString());
 
     this.fabricRunning = true;
-    await sleep(20000);
+    await sleep(30000);
   }
   async deployNetwork(): Promise<void> {
     this.executeFabricDockerCompose(dockerComposeFile);

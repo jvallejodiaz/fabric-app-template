@@ -236,6 +236,14 @@ export class CustomWorld {
     }
   }
 
+  async sendGetRequest(path: string) {
+    if (this.#httpClient) {
+      this.#apiResponse = await this.#httpClient.get(path);
+    } else {
+      throw new Error("HttpClient not initialized");
+    }
+  }
+
   async connect(address: string): Promise<void> {
     // address is the name of the peer, lookup the connection info
     const peer = peerConnectionInfo[address];
